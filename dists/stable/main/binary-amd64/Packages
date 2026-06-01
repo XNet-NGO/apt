@@ -1,0 +1,15 @@
+Package: aiope
+Version: 0.1.0
+Architecture: amd64
+Maintainer: XNet-NGO <admin@xnet.ngo>
+Filename: pool/main/aiope_0.1.0_amd64.deb
+Size: 14629892
+MD5sum: 4c20e31572ea83f5e83f9e0f7c1df1e7
+SHA1: 84345c9607e731906423b814e33429fa957c806d
+SHA256: 0a58818e74b9e55dcba20e447584ce0165c7b02157ce570f7f452855332a34fa
+Section: utils
+Priority: optional
+Description: AI assistant in your terminal
+ AIOPE provides an AI-powered terminal assistant with tool use,
+ agent orchestration, and a built-in web interface.
+
