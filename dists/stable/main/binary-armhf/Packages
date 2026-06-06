@@ -3,10 +3,10 @@ Version: 0.2.1
 Architecture: armhf
 Maintainer: XNet-NGO <admin@xnet.ngo>
 Filename: pool/main/aiope_0.2.1_armhf.deb
-Size: 6808266
-MD5sum: b47217e9b0d54fea1caff3e4a94a872e
-SHA1: 3733fb3278b53f2aa8bf146b79914397aae5b2fa
-SHA256: 31474f5e9f442705244c2879b68dff6fbaf24d6c72dcc4e35f33995b9291622d
+Size: 6808654
+MD5sum: 49fa9ca5ae3dd199afe60498170e5582
+SHA1: a03a61ec4535f166e016f72282fd14656f790996
+SHA256: 67386908a95dc8b240f51ab63d5d20939ff901a06d82c1beb18d2fab0ea021c4
 Section: utils
 Priority: optional
 Description: AI assistant in your terminal
