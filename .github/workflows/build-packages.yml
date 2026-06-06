@@ -1,0 +1,248 @@
+name: Build Multiarch Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Package version (e.g. 0.2.0)'
+        required: true
+        default: '0.2.0'
+      source_repo:
+        description: 'Source repository'
+        required: true
+        default: 'xnet-admin-1/aiope-agentx'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: linux
+            goarch: amd64
+            deb_arch: amd64
+            rpm_arch: x86_64
+          - goos: linux
+            goarch: arm64
+            deb_arch: arm64
+            rpm_arch: aarch64
+          - goos: linux
+            goarch: arm
+            goarm: "7"
+            deb_arch: armhf
+            rpm_arch: armv7hl
+    steps:
+      - name: Checkout apt repo
+        uses: actions/checkout@v4
+
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.event.inputs.source_repo }}
+          path: source
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache-dependency-path: source/go.sum
+
+      - name: Build binary
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          GOARM: ${{ matrix.goarm }}
+          CGO_ENABLED: "0"
+        run: |
+          cd source
+          go build -ldflags="-s -w -X main.version=${{ github.event.inputs.version }}" \
+            -o ../aiope ./cmd/aiope/
+
+      - name: Build .deb package
+        run: |
+          PKG=aiope
+          VER=${{ github.event.inputs.version }}
+          ARCH=${{ matrix.deb_arch }}
+          DIR="${PKG}_${VER}_${ARCH}"
+          mkdir -p "${DIR}/DEBIAN"
+          mkdir -p "${DIR}/usr/local/bin"
+          cp aiope "${DIR}/usr/local/bin/aiope"
+          chmod 755 "${DIR}/usr/local/bin/aiope"
+          cat > "${DIR}/DEBIAN/control" <<EOF
+          Package: ${PKG}
+          Version: ${VER}
+          Architecture: ${ARCH}
+          Maintainer: XNet-NGO <admin@xnet.ngo>
+          Section: utils
+          Priority: optional
+          Description: AI assistant in your terminal
+           AIOPE provides an AI-powered terminal assistant with tool use,
+           agent orchestration, and a built-in web interface.
+          EOF
+          # Remove leading spaces from heredoc
+          sed -i 's/^          //' "${DIR}/DEBIAN/control"
+          dpkg-deb --build "${DIR}"
+
+      - name: Build .rpm package
+        run: |
+          sudo apt-get install -y rpm
+          PKG=aiope
+          VER=${{ github.event.inputs.version }}
+          ARCH=${{ matrix.rpm_arch }}
+          mkdir -p rpmbuild/{SPECS,SOURCES,BUILD,RPMS,SRPMS}
+          cp aiope "rpmbuild/SOURCES/aiope"
+          cat > rpmbuild/SPECS/aiope.spec <<EOF
+          Name: ${PKG}
+          Version: ${VER}
+          Release: 1
+          Summary: AI assistant in your terminal
+          License: Proprietary
+          Architecture: ${ARCH}
+
+          %description
+          AIOPE provides an AI-powered terminal assistant with tool use,
+          agent orchestration, and a built-in web interface.
+
+          %install
+          mkdir -p %{buildroot}/usr/local/bin
+          cp %{_sourcedir}/aiope %{buildroot}/usr/local/bin/aiope
+          chmod 755 %{buildroot}/usr/local/bin/aiope
+
+          %files
+          /usr/local/bin/aiope
+          EOF
+          sed -i 's/^          //' rpmbuild/SPECS/aiope.spec
+          rpmbuild --define "_topdir $(pwd)/rpmbuild" \
+            --define "_arch ${ARCH}" \
+            --target "${ARCH}" \
+            -bb rpmbuild/SPECS/aiope.spec
+
+      - name: Upload deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: deb-${{ matrix.deb_arch }}
+          path: "*.deb"
+
+      - name: Upload rpm artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rpm-${{ matrix.rpm_arch }}
+          path: rpmbuild/RPMS/**/*.rpm
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout apt repo
+        uses: actions/checkout@v4
+
+      - name: Download all deb artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: deb-*
+          path: debs/
+          merge-multiple: true
+
+      - name: Download all rpm artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: rpm-*
+          path: rpms/
+          merge-multiple: true
+
+      - name: Update APT repository structure
+        run: |
+          # Clear old pool and rebuild
+          rm -rf pool/main/*.deb
+          mkdir -p pool/main
+          cp debs/*.deb pool/main/
+
+          # Generate Packages files for each arch
+          for arch in amd64 arm64 armhf; do
+            dir="dists/stable/main/binary-${arch}"
+            mkdir -p "${dir}"
+            # Filter debs for this arch
+            dpkg-scanpackages --arch "${arch}" pool/main > "${dir}/Packages"
+            gzip -9c "${dir}/Packages" > "${dir}/Packages.gz"
+          done
+
+          # Generate Release file
+          cd dists/stable
+          cat > Release <<EOF
+          Architectures: amd64 arm64 armhf
+          Codename: stable
+          Components: main
+          Date: $(date -Ru)
+          Description: APT repository for AIOPE packages
+          Label: AIOPE
+          Origin: XNet-NGO
+          Suite: stable
+          EOF
+          sed -i 's/^          //' Release
+
+          # Add checksums
+          {
+            echo "MD5Sum:"
+            find main -type f | sort | while read f; do
+              printf " %s %16d %s\n" "$(md5sum "$f" | cut -d' ' -f1)" "$(stat -c%s "$f")" "$f"
+            done
+            echo "SHA256:"
+            find main -type f | sort | while read f; do
+              printf " %s %16d %s\n" "$(sha256sum "$f" | cut -d' ' -f1)" "$(stat -c%s "$f")" "$f"
+            done
+          } >> Release
+
+      - name: Set up RPM repository
+        run: |
+          sudo apt-get install -y createrepo-c
+          mkdir -p rpm-repo
+          cp rpms/*.rpm rpm-repo/ 2>/dev/null || true
+          find rpms/ -name "*.rpm" -exec cp {} rpm-repo/ \;
+          cd rpm-repo
+          createrepo_c .
+
+      - name: Update README
+        run: |
+          VER=${{ github.event.inputs.version }}
+          cat > README.md <<'EOF'
+          # XNet-NGO APT & RPM Repository
+
+          Debian/Ubuntu and RPM packages for XNet-NGO tools.
+
+          ## Available packages
+
+          - `aiope` — amd64, arm64, armhf (deb) / x86_64, aarch64, armv7hl (rpm)
+
+          ## Debian/Ubuntu (APT)
+
+          ```bash
+          echo "deb [trusted=yes] https://raw.githubusercontent.com/XNet-NGO/apt/main stable main" | sudo tee /etc/apt/sources.list.d/xnet-ngo.list
+          sudo apt update
+          sudo apt install aiope
+          ```
+
+          ## RHEL/Fedora/openSUSE (RPM)
+
+          ```bash
+          sudo tee /etc/yum.repos.d/xnet-ngo.repo <<REPO
+          [xnet-ngo]
+          name=XNet-NGO
+          baseurl=https://raw.githubusercontent.com/XNet-NGO/apt/main/rpm-repo
+          enabled=1
+          gpgcheck=0
+          REPO
+          sudo dnf install aiope
+          ```
+          EOF
+          sed -i 's/^          //' README.md
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Update packages to v${{ github.event.inputs.version }} (multiarch deb+rpm)"
+          git push
