@@ -1,0 +1,41 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Architectures: amd64 arm64 armhf
+Codename: stable
+Components: main
+Date: Sat, 06 Jun 2026 13:57:57 +0000
+Description: APT repository for AIOPE packages
+Label: AIOPE
+Origin: XNet-NGO
+Suite: stable
+MD5Sum:
+ 555d3460f385950b0559fe91e8d0481b              499 main/binary-amd64/Packages
+ 157fd439be9aa71d1a6bc4facf637915              388 main/binary-amd64/Packages.gz
+ 1a61c92d50ac44f6951e115edcdaeba6              499 main/binary-arm64/Packages
+ 4bbd1255e0ff6f2c9d77f72d4f3931b0              386 main/binary-arm64/Packages.gz
+ 01c7c3eac1b45791bb737a6ee8c154d4              499 main/binary-armhf/Packages
+ 4e4ebe89eebfff260675aef40d7ffb21              388 main/binary-armhf/Packages.gz
+SHA256:
+ f0de9f678b590b9323ebb96d009684df40cd92b13c9c73e2e9d9830eedb76204              499 main/binary-amd64/Packages
+ f293770f0d66dbdcd8e06e9f9fb4212feb7cea75cc95235c85c0c64b84449478              388 main/binary-amd64/Packages.gz
+ c00f0a95a20abc54445ad0d441a2454dab10741fd61f22df702427bf16a50c52              499 main/binary-arm64/Packages
+ cf49f54038cb3c9db4dbc27e62f9e42ed11003a1c8b91bfb1bc3dadbb5842045              386 main/binary-arm64/Packages.gz
+ 39da8948c3db38054cc64b4af62d2cd7d99cbc72c5a33758eb5868eabe9c030a              499 main/binary-armhf/Packages
+ 7ed26d48a9df357aaca9b629c06945c31b01d3d3046b5c2c32edede3d0db83f6              388 main/binary-armhf/Packages.gz
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEJiOiNu3E3YZnvOg9AM1ISL6DOfQFAmokJ2YACgkQAM1ISL6D
+OfRzHA/7BrVll9UtRz5L30MQmM45kumsrYsIe80ldF0zgMpuKcw6TvY9TTJjepfY
+LVio0EkHA3yLxQGMsjFeJlHuNcGoQX7zyeVfBjSCWzARHfo8TC/BabXexiZIjFlz
+zk6UoiQGVwbzfRMUI5Qqqos8MuF4N3YAkHTjBkT1UP9hSfbYFqco4e9qQxSiyN1g
+0dWMyuFT58EfhYVp5OOowftid2EADJ3hgLp9LK6i4rubsCdjlCBL5Zq7iRI6XbSC
+s610ARaHUMyP6d5ijTuWMXT5LpZJa51S12mfPH2Tg+lEhBtkuFvi/Y0DQ34hn1+e
+vHUqMz6ePhpOcU/aam2rDRPujhGYm6tmC3JRo+k04xB3e9lklbB2TJas16IJs/bg
+shIMvZHnXGqKA8yhXCBamz2aUnAdkIxHzDftg2KzqFtMpTCRlRBsqRuJ11wTXr8i
+c169fpSvQR7VKWLy9xNgXTe2y+hzpubITbjr1o0PZShjq2n8oUhLb8VffYe0YzfA
++0f2+VHX1hjJQtmcbyY6edsPjC708qhulZEz+6Em0DYpvCHv7T4SRg92JmXtwn2q
+38l56K0HXGOHS0tVYgHcn7U07A5D8hVVaM7j+5UHr2/4bLaahaOKDqiZ9BQ3hZom
+Adgedn6QNKVF9mMNA04Xq6rY4XwO+sEC/nzeEaTcauTqNsKNgJM=
+=OATn
+-----END PGP SIGNATURE-----

@@ -3,10 +3,10 @@ Version: 0.2.0
 Architecture: arm64
 Maintainer: XNet-NGO <admin@xnet.ngo>
 Filename: pool/main/aiope_0.2.0_arm64.deb
-Size: 6667202
-MD5sum: 69d46771fb8bf531c93f6a7ab22260b9
-SHA1: e68ed0498ded38e3c49d41bc843402f889da6603
-SHA256: fc5b65f720c8e8a05c357f9b915116ee310e2d480ea07932a15435d7114c6362
+Size: 6667196
+MD5sum: 603499d27e11b2ca709277e4c3e1bdd7
+SHA1: 42baf67f0b52bf92bdde3544a9a4fc909e71ebcb
+SHA256: f20e744ebca445dff4fd432673aae3fbceddcc42aa2ef46034ab95052e212f3a
 Section: utils
 Priority: optional
 Description: AI assistant in your terminal
