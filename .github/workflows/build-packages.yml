@@ -57,7 +57,7 @@ jobs:
           CGO_ENABLED: "0"
         run: |
           cd source
-          go build -ldflags="-s -w -X main.version=${{ github.event.inputs.version }}" \
+          go build -ldflags="-s -w -X main.version=${{ github.event.inputs.version }} -X main.commit=$(git rev-parse --short HEAD) -X main.buildDate=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
             -o ../aiope ./cmd/aiope/
 
       - name: Build .deb package
