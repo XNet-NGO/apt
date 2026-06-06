@@ -1,0 +1,15 @@
+Package: aiope
+Version: 0.2.0
+Architecture: armhf
+Maintainer: XNet-NGO <admin@xnet.ngo>
+Filename: pool/main/aiope_0.2.0_armhf.deb
+Size: 6808344
+MD5sum: b577a05c828cb48fbf4b4b6ba6654d93
+SHA1: f6149b7fda60b8a7337cdaa0a484a0b4845bf260
+SHA256: a156a8cfc0cd8ca2190a1ef2e57bd8e246261dbcadc347ce27a28e0a1fa87bf9
+Section: utils
+Priority: optional
+Description: AI assistant in your terminal
+ AIOPE provides an AI-powered terminal assistant with tool use,
+ agent orchestration, and a built-in web interface.
+

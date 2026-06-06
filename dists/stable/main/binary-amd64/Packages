@@ -1,12 +1,12 @@
 Package: aiope
-Version: 0.1.0
+Version: 0.2.0
 Architecture: amd64
 Maintainer: XNet-NGO <admin@xnet.ngo>
-Filename: pool/main/aiope_0.1.0_amd64.deb
-Size: 14629892
-MD5sum: 4c20e31572ea83f5e83f9e0f7c1df1e7
-SHA1: 84345c9607e731906423b814e33429fa957c806d
-SHA256: 0a58818e74b9e55dcba20e447584ce0165c7b02157ce570f7f452855332a34fa
+Filename: pool/main/aiope_0.2.0_amd64.deb
+Size: 7360444
+MD5sum: 2b55c34600d81b79bb34480f4fd640cc
+SHA1: f01eefccdc5c081a56a13ebfab3135d2abf2804c
+SHA256: 6e55aef3c8864a521150fc3f5b6345c6a678af9b2cb4953dd91ebd6a74d576cb
 Section: utils
 Priority: optional
 Description: AI assistant in your terminal

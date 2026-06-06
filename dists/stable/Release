@@ -1,24 +1,22 @@
-Architectures: amd64
+Architectures: amd64 arm64 armhf
 Codename: stable
 Components: main
-Date: Mon, 01 Jun 2026 00:29:27 +0000
+Date: Sat, 06 Jun 2026 13:40:08 +0000
 Description: APT repository for AIOPE packages
 Label: AIOPE
 Origin: XNet-NGO
 Suite: stable
 MD5Sum:
- 4c1e87f41510dc42879f3637710e01bf              184 Release
- 53d4a1b43b9137070b54da20e90a7693              500 main/binary-amd64/Packages
- e82d1e2fdfc0e57e2918b540cf68d8d9              390 main/binary-amd64/Packages.gz
-SHA1:
- 2bc830e06aa8ba71e1262b7e0f574a1d07400027              184 Release
- d79f3f84188f36d259958c8e36d0499897478501              500 main/binary-amd64/Packages
- 42244e425ab55f5592bd22ee69e76659a0b87d82              390 main/binary-amd64/Packages.gz
+ d498e2119a49a76a471c5efa0d14c165              499 main/binary-amd64/Packages
+ e03a73c34f6ce1e7b2c43d9e9e4c3bbf              388 main/binary-amd64/Packages.gz
+ 6d4180dd7f4852e45cd5fe47549a144e              499 main/binary-arm64/Packages
+ ee53a839d8d18f128f06965177849c94              391 main/binary-arm64/Packages.gz
+ d5a4e4d518f1b0e63430d20aebcc4c30              499 main/binary-armhf/Packages
+ bf2436de80db7ce40d700125346fc8d4              390 main/binary-armhf/Packages.gz
 SHA256:
- 7d1df2d1afe411322770b046dea1d5d16a7d68646a0e837e4217d6ebf94b7d0d              184 Release
- 1478c10ca1d943b97699c87296396306f942070e29c56e98f484ad37f14876a9              500 main/binary-amd64/Packages
- 2e0163bb721624373e1d119b068bea68880903d712b286494ca3f2c1aca058ca              390 main/binary-amd64/Packages.gz
-SHA512:
- aa06af4a2b468f6e56b14c73030646b1ee8ee0ecbafe9111e407e3d2f095215ff23e243dd9115fbf3233d02bafaa99bfea65c9af8ac9e5c9837328b7f8b7ffab              184 Release
- 1e2ab9ecd47ccb319892ff9592cf65cccc91cd09012722ae4598a4105e075003119489a5809c2e7c5a2c24c2a54ff8edb3dceb8c355699a1e2285a126a539a30              500 main/binary-amd64/Packages
- 73978b83b68065379276973804594b38a09de39665bf4a8e4ae6d981894b2901ee448409abfb3b7744c80c0b9582202f44099de6e9f1d4ce76c49aae69497992              390 main/binary-amd64/Packages.gz
+ 2d91c165d66fa4a49534e973e8da43d076e609ce9dedd11060520ee4c851692d              499 main/binary-amd64/Packages
+ cb2aa67d3c2ed1af82de15b924e999445376d9f8adfbb690d709aa0675ef4d3e              388 main/binary-amd64/Packages.gz
+ 37219e2d7404d610db1e2a06b1a6cbe78e8e307c8cd54c748027e3485ca25ecc              499 main/binary-arm64/Packages
+ 903d83aa79141e1b3a2dc6ec922a940448153c76c2da71d8448ffe4200a84613              391 main/binary-arm64/Packages.gz
+ eb06248c04ec7d2da2589415ba3dbfcbf156c8f726826cd11b380e35c82d4eae              499 main/binary-armhf/Packages
+ e8e815c7623a467519f542a0d687ee039d8e0f8103738c2368f656e363b4feb8              390 main/binary-armhf/Packages.gz
