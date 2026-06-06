@@ -138,6 +138,11 @@ jobs:
       - name: Checkout apt repo
         uses: actions/checkout@v4
 
+      - name: Import GPG key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+          gpg --list-secret-keys
+
       - name: Download all deb artifacts
         uses: actions/download-artifact@v4
         with:
@@ -154,21 +159,17 @@ jobs:
 
       - name: Update APT repository structure
         run: |
-          # Clear old pool and rebuild
           rm -rf pool/main/*.deb
           mkdir -p pool/main
           cp debs/*.deb pool/main/
 
-          # Generate Packages files for each arch
           for arch in amd64 arm64 armhf; do
             dir="dists/stable/main/binary-${arch}"
             mkdir -p "${dir}"
-            # Filter debs for this arch
             dpkg-scanpackages --arch "${arch}" pool/main > "${dir}/Packages"
             gzip -9c "${dir}/Packages" > "${dir}/Packages.gz"
           done
 
-          # Generate Release file
           cd dists/stable
           cat > Release <<EOF
           Architectures: amd64 arm64 armhf
@@ -182,7 +183,6 @@ jobs:
           EOF
           sed -i 's/^          //' Release
 
-          # Add checksums
           {
             echo "MD5Sum:"
             find main -type f | sort | while read f; do
@@ -194,44 +194,65 @@ jobs:
             done
           } >> Release
 
-      - name: Set up RPM repository
+      - name: Sign APT Release
         run: |
-          sudo apt-get install -y createrepo-c
+          cd dists/stable
+          gpg --batch --yes --armor --detach-sign -o Release.gpg Release
+          gpg --batch --yes --clearsign -o InRelease Release
+
+      - name: Export public key
+        run: |
+          gpg --armor --export > public-key.asc
+
+      - name: Set up signed RPM repository
+        run: |
+          sudo apt-get install -y createrepo-c rpm
           mkdir -p rpm-repo
-          cp rpms/*.rpm rpm-repo/ 2>/dev/null || true
           find rpms/ -name "*.rpm" -exec cp {} rpm-repo/ \;
+
+          # Sign each RPM
+          cat > ~/.rpmmacros <<MACROS
+          %_gpg_name XNet-NGO <admin@xnet.ngo>
+          %__gpg_sign_cmd %{__gpg} gpg --batch --no-verbose --no-armor --no-secmem-warning -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}
+          MACROS
+          for rpm_file in rpm-repo/*.rpm; do
+            rpmsign --addsign "$rpm_file"
+          done
+
           cd rpm-repo
           createrepo_c .
 
       - name: Update README
         run: |
-          VER=${{ github.event.inputs.version }}
           cat > README.md <<'EOF'
           # XNet-NGO APT & RPM Repository
 
-          Debian/Ubuntu and RPM packages for XNet-NGO tools.
+          Signed Debian/Ubuntu and RPM packages for XNet-NGO tools.
 
           ## Available packages
 
           - `aiope` — amd64, arm64, armhf (deb) / x86_64, aarch64, armv7hl (rpm)
 
-          ## Debian/Ubuntu (APT)
+          ## Debian/Ubuntu (APT) — signed
 
           ```bash
-          echo "deb [trusted=yes] https://raw.githubusercontent.com/XNet-NGO/apt/main stable main" | sudo tee /etc/apt/sources.list.d/xnet-ngo.list
+          curl -fsSL https://raw.githubusercontent.com/XNet-NGO/apt/main/public-key.asc | sudo gpg --dearmor -o /usr/share/keyrings/xnet-ngo-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/xnet-ngo-archive-keyring.gpg] https://raw.githubusercontent.com/XNet-NGO/apt/main stable main" | sudo tee /etc/apt/sources.list.d/xnet-ngo.list
           sudo apt update
           sudo apt install aiope
           ```
 
-          ## RHEL/Fedora/openSUSE (RPM)
+          ## RHEL/Fedora/openSUSE (RPM) — signed
 
           ```bash
+          sudo rpm --import https://raw.githubusercontent.com/XNet-NGO/apt/main/public-key.asc
           sudo tee /etc/yum.repos.d/xnet-ngo.repo <<REPO
           [xnet-ngo]
           name=XNet-NGO
           baseurl=https://raw.githubusercontent.com/XNet-NGO/apt/main/rpm-repo
           enabled=1
-          gpgcheck=0
+          gpgcheck=1
+          gpgkey=https://raw.githubusercontent.com/XNet-NGO/apt/main/public-key.asc
           REPO
           sudo dnf install aiope
           ```
@@ -243,5 +264,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "Update packages to v${{ github.event.inputs.version }} (multiarch deb+rpm)"
+          git commit -m "Update packages to v${{ github.event.inputs.version }} (signed multiarch deb+rpm)"
           git push
